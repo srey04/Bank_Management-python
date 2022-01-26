@@ -7,3 +7,8 @@ TABLES TO BE ADDED:
 Queries to create:
 1. Account_Number
 2. TRANSACTIONS
+
+#To create a new table TRANSANCTIONS in BANK_MANAGEMENT database:
+USE BANK_MANAGEMENT;
+CREATE TABLE TRANSANCTIONS(ACCOUNT_NO char(16) primary key,AMOUNT integer,TIME datetime);
+
