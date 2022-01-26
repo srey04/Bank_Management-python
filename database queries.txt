@@ -1,0 +1,9 @@
+DATABASES TO BE ADDED:
+1.BANK_MANAGEMENT 
+TABLES TO BE ADDED:
+1.Account_Number 
+2.TRANSACTIONS
+
+Queries to create:
+1. Account_Number
+2. TRANSACTIONS
