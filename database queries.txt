@@ -10,7 +10,7 @@ Queries to create:
 
 #To create a new table TRANSANCTIONS in BANK_MANAGEMENT database:
 USE BANK_MANAGEMENT;
-CREATE TABLE TRANSANCTIONS(ACCOUNT_NO char(16) primary key,AMOUNT integer,TIME datetime);
+CREATE TABLE TRANSANCTIONS(ACCOUNT_NO char(16),AMOUNT integer,TIME datetime);
 
 #pls refer to this before the above one:
 CREATE DATABASE IF NOT EXISTS BANK_MANAGEMENT;
