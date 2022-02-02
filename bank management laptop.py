@@ -1,35 +1,37 @@
 
-#Bank managemeent system term 2 project
+
+   
+#Bank Management System Term 2 Project
 
 
 #IMPORT SYSTEMS 
 import datetime
 import getpass
-from lib2to3.pgen2.token import NUMBER
-from pickle import FALSE
-from xmlrpc.client import NOT_WELLFORMED_ERROR
 import prettytable as ptt
 import mysql.connector as sql 
 from sys import exit 
 import random
 import datetime
-#Function Blocks
+
+#SQL Statements
 scon=sql.connect(host='localhost',user='root',database='BANK_MANAGEMENT',password='sriyansh')
 if scon.is_connected():
     print("sucessfully connected")
 c1=scon.cursor()
 
+#Function Blocks
+
 #Function for account creation
 def newaccount():
-    NAME=input("Enter Account holder name: ")
+    NAME=input("Enter Account Holder Name: ")
     if NAME=={}:
         print("Invalid Name")
     else:
-        PHONE_NO=str(input("Enter phone number: "))
+        PHONE_NO=str(input("Enter Phone Number: "))
         if len(PHONE_NO)!=10:
-            print("Invalid phone number")
+            print("Invalid Phone Number")
         else:
-            ACCOUNT_TYPE=input("Type of account(Current or Savings): ").upper()
+            ACCOUNT_TYPE=input("Type of Account(Current or Savings): ").upper()
             if ACCOUNT_TYPE not in ['CURRENT','SAVINGS']:
                 print("Invalid input")
             else:      
@@ -37,24 +39,24 @@ def newaccount():
                 ACCOUNT_NO=''.join(random.choice('0123456789ABCDEF') for i in range(16))
                 BALANCE=int(input("Enter initial amount to be deposited: "))
                 PASSWORD=''.join(random.choice('0123456789') for i in range(4))
-                print("Account number and password sucessfully generated")
+                print("Account Number and Password successfully generated")
                 print("Your Account Number is: ", ACCOUNT_NO)
                 print("Your Password is", PASSWORD)
                 sql_insert="insert into Account_Number values('{}','{}','{}','{}','{}','{}')".format(ACCOUNT_NO, NAME, PHONE_NO, ACCOUNT_TYPE, BALANCE, PASSWORD)
                 c1.execute(sql_insert)
                 print()
-                print("Sucessfully account created")
+                print("Successfully account created")
                 scon.commit()
 
 #Function for viewing account 
 def viewacc():
-    n=input("Enter your account number: ")
-    pwds=getpass.getpass(prompt="Enter password: ")
+    n=input("Enter your Account Number: ")
+    pwds=getpass.getpass(prompt="Enter Password: ")
     sql_z3='select * from Account_Number where ACCOUNT_NO=("{}")'.format(n)
     c1.execute(sql_z3)
     z1=c1.fetchall()
     if len(z1)<1: 
-        print("Account number invalid")
+        print("Account Number invalid")
     else:
         sql_u='select password from Account_Number where ACCOUNT_NO=("{}")'.format(n)
         c1.execute(sql_u)
@@ -68,13 +70,13 @@ def viewacc():
                 d_recs.add_row(i)
             print(d_recs)          
         else:
-            print("Incorrect password")   
+            print("Incorrect Password")   
     scon.commit()
 
-#For deposition/withdrawl
+#Function For deposition/withdrawl
 def transaction():
-    acc_input=input("Enter your account number: ")
-    pd=getpass.getpass(prompt="Enter password: ")
+    acc_input=input("Enter your Account Number: ")
+    pd=getpass.getpass(prompt="Enter Password: ")
     sql_u='select PASSWORD from Account_Number where ACCOUNT_NO=("{}")'.format(acc_input)
     c1.execute(sql_u)
     t=c1.fetchall()
@@ -83,106 +85,99 @@ def transaction():
         print("2.Withdraw")
         opttran=int(input("Deposit or Withdraw(1/2): "))
         if opttran==1:
-            d=int(input("Enter deposit amount: "))
+            d=int(input("Enter Deposit Amount: "))
             if d<=0:
-                print("Invalid amount")
+                print("Invalid Amount")
             else:
                 sql_up="update Account_Number SET BALANCE=BALANCE+{}".format(d)
                 c1.execute(sql_up)
                 up1=c1.fetchall()
                 for i in up1: 
                     print(i)
-                print("Sucessfully Deposited")
+                print("Successfully Deposited")
                 transactionsummary(acc_input,d)
                 scon.commit()
         elif opttran==2:
-            w=int(input("Enter withdraw amount: "))
+            w=int(input("Enter Withdraw Amount: "))
             if w>=0:    
                 sql_op='select BALANCE from Account_Number where ACCOUNT_NO=("{}")'.format(acc_input)
                 c1.execute(sql_op)
                 op=c1.fetchall()
                 if op[0][0] < w:
-                    print("Insufficient balance") 
+                    print("Insufficient Balance") 
                 else:      
                     sql_upd="update Account_Number SET BALANCE=BALANCE-{}".format(w)
                     c1.execute(sql_upd)
                     up2=c1.fetchall()
                     for i in up2:
                         print(i)
-                    print("Sucessfully Withdrawn")
+                    print("Successfully Withdrawn")
                     transactionsummary(acc_input,w*(-1))
                 scon.commit()
             #If user inputs number >=3
             else :
                 print("Invalid choice")
         else:
-            print("Incorrect password")
+            print("Incorrect Password")
 
-#For modfification of account
+#For modfification of account details
 def modify():
-    z=input("Enter your account number: ")
-    pds=getpass.getpass(prompt="Enter password: ")
+    z=input("Enter your Account Number: ")
+    pds=getpass.getpass(prompt="Enter Password: ")
     sql_u='select PASSWORD from Account_Number where ACCOUNT_NO=("{}")'.format(z)
     c1.execute(sql_u)
     z2=c1.fetchall()
     if z2[0][0]==pds:
         print("Entries to be modified:")
         print("1.Account Holder Name")
-        print("2.Phone number")
-        print("3.Change password")
+        print("2.Phone Number")
+        print("3.Change Password")
         optmod=int(input("Enter choice(1/2/3): "))
         if optmod==1:
-            newname=input("Enter modified name: ")
+            newname=input("Enter modified Name: ")
             strsql2 = "UPDATE Account_Number SET NAME='{}' WHERE ACCOUNT_NO='{}'".format(newname, z)
             c1.execute(strsql2)
-            print("Name sucessfully changed")
+            print("Name Successfully changed")
         elif optmod==2:
-            newno=int(input("Enter new phone number: "))
-            sql2="select PHONE_NO from Account_Number WHERE ACCOUNT_NO='{}'".format(z)
-            c1.execute(sql2)
-            t=c1.fetchall()
-            if t[0][0]==newno:
-                print("Can't input same phone number, please enter a different phone number.")
-                returnexit() 
-            else:
-                strsql2 = "UPDATE Account_Number SET PHONE_NO='{}' WHERE ACCOUNT_NO='{}'".format(newno, z)
-                c1.execute(strsql2)
-                print("Phone number sucessfully changed")
+            newno=int(input("Enter New Phone Number: "))
+            strsql2 = "UPDATE Account_Number SET PHONE_NO='{}' WHERE ACCOUNT_NO='{}'".format(newno, z)
+            c1.execute(strsql2)
+            print("Phone Number successfully changed")
         elif optmod==3:
-            newpassword=getpass.getpass(prompt="Enter new password: ")
+            newpassword=getpass.getpass(prompt="Enter new password(4 digit characters only): ")
             sql2="select PASSWORD from Account_Number WHERE ACCOUNT_NO='{}'".format(z)
             c1.execute(sql2)
             t=c1.fetchall()
             if t[0][0]==newpassword:
-                print("Cant input same password, please enter a different password")
+                print("Cant input same Password, please enter a different Password")
                 returnexit()    
             else:
                 strsql2 = "UPDATE Account_Number SET PASSWORD='{}' WHERE ACCOUNT_NO='{}'".format(newpassword, z)
                 c1.execute(strsql2)
                 print("Password successfully changed")
     else: 
-        print("Incorrect password")
+        print("Incorrect Password")
     scon.commit()
 
 #Function for Closing account 
 def close():
-    z3=input("Enter your account number: ")
-    pwds=getpass.getpass(prompt="Enter your password: ")
+    z3=input("Enter your Account Number: ")
+    pwds=getpass.getpass(prompt="Enter your Password: ")
     sql_z3='select * from Account_Number where ACCOUNT_NO=("{}")'.format(z3)
     c1.execute(sql_z3)
     z1=c1.fetchall()
     if len(z1)<1: 
-        print("Account number invalid")
+        print("Account Number invalid")
     else:
         z4="DELETE FROM Account_Number WHERE ACCOUNT_NO='{}'".format(z3)
         c1.execute(z4)
-        print("Account sucessfully closed")
+        print("Account successfully closed")
     scon.commit()    
 
-#Function for viewing database(with pin)    
+#Function for viewing database(with pin) for authorized personnel 
 def viewdb():
-    id=input("Enter id: ")
-    passwd=getpass.getpass(prompt="Enter password: ")
+    id=input("Enter ID: ")
+    passwd=getpass.getpass(prompt="Enter Password: ")
     if id=="1234" and passwd=="9999":    
         sql_r='select * from Account_Number'                
         c1.execute(sql_r)
@@ -192,26 +187,28 @@ def viewdb():
             d_recs.add_row(i)
         print(d_recs)
 
-#Escape recursion
+#Function for returning to previous menu function/exiting code block
 def returnexit():
     print("Do you want to return to previous menu or exit?")
     print("Press 'E' for exit")
     print("Press 'B' to return to previous menu")
     n=input("Exit(E) or Back(B): ")    
-    if n=='E':
+    if n in'Ee':
         exit()
-    elif n=='B':
+    elif n in 'Bb':
         menu()
-
+        
+#Function for inputting values into TRANSACTIONS Table
 def transactionsummary(ACCOUNT_NO,AMOUNT):   
     sql_r='INSERT INTO TRANSACTIONS VALUES(%s,%s,%s)'
     t1=datetime.datetime.now()
     c1.execute(sql_r,(ACCOUNT_NO,AMOUNT,t1))
     scon.commit()
-
+    
+#Function for viewing transaction summary
 def viewsummary():
-    n=input("Enter your account number: ")
-    passwd=input("Enter your password: ")
+    n=input("Enter your Account Number: ")
+    passwd=input("Enter your Password: ")
     sql_u='select PASSWORD from Account_Number where ACCOUNT_NO=("{}")'.format(n)
     c1.execute(sql_u)
     t=c1.fetchall()
@@ -239,16 +236,16 @@ def menu():
     print("                            BANK MANAGEMENT SYSTEM                    ")
     print()
     print()
-    print("1.Creating a new account")
-    print("2.View account information ")
+    print("1.Creating a New Account")
+    print("2.View Account Information ")
     print("3.Transactions")
-    print("4.Modify account details")
-    print("5.Close account")
-    print("6.View transaction summary")
+    print("4.Modify Account Details")
+    print("5.Close Account")
+    print("6.View Transaction Summary")
     print("7.EXIT")
-    print("8.For authorized personnel")
+    print("8.For Authorized Personnel")
     print()
-    secret_input=getpass.getpass(prompt="Press enter key to continue")
+    secret_input=getpass.getpass(prompt="Press any key to continue")
     opt=""
     print()
     opt=int(input("Enter your choice: "))
@@ -256,34 +253,23 @@ def menu():
     if opt==1:
         newaccount()
         print()
-        returnexit()
-
-        #secret_input=getpass.getpass(prompt="Press enter key to continue")
+        returnexit()    
     elif opt==2:
         viewacc()
         print()
-        returnexit()
-
-        #secret_input=getpass.getpass(prompt="Press enter key to continue")
+        returnexit()       
     elif opt==3:
         transaction()
         print()
-        returnexit()
-
-        #secret_input=getpass.getpass(prompt="Press enter key to continue")
+        returnexit()        
     elif opt==4:
         modify()
         print() 
-        returnexit()
-            
-        #secret_input=getpass.getpass(prompt="Press enter key to continue")
-        
+        returnexit()       
     elif opt==5:
         close()
         print()
-        returnexit()
-
-        #secret_input=getpass.getpass(prompt="Press enter key to continue")
+        returnexit()        
     elif opt==6:
         viewsummary()
         print()
@@ -294,7 +280,7 @@ def menu():
         viewdb()
         print()
         returnexit()
-        #secret_input=getpass.getpass(prompt="Press enter key to continue")
+       
     #For invalid options between 1-7
     else:
         print("Invalid option")
@@ -302,6 +288,7 @@ def menu():
 
 #Calling main code
 menu()
+
 
 
 
