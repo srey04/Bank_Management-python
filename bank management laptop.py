@@ -138,9 +138,16 @@ def modify():
             print("Name sucessfully changed")
         elif optmod==2:
             newno=int(input("Enter new phone number: "))
-            strsql2 = "UPDATE Account_Number SET PHONE_NO='{}' WHERE ACCOUNT_NO='{}'".format(newno, z)
-            c1.execute(strsql2)
-            print("Phone number sucessfully changed")
+            sql2="select PHONE_NO from Account_Number WHERE ACCOUNT_NO='{}'".format(z)
+            c1.execute(sql2)
+            t=c1.fetchall()
+            if t[0][0]==newno:
+                print("Can't input same phone number, please enter a different phone number.")
+                returnexit() 
+            else:
+                strsql2 = "UPDATE Account_Number SET PHONE_NO='{}' WHERE ACCOUNT_NO='{}'".format(newno, z)
+                c1.execute(strsql2)
+                print("Phone number sucessfully changed")
         elif optmod==3:
             newpassword=getpass.getpass(prompt="Enter new password: ")
             sql2="select PASSWORD from Account_Number WHERE ACCOUNT_NO='{}'".format(z)
@@ -234,7 +241,7 @@ def menu():
     print()
     print("1.Creating a new account")
     print("2.View account information ")
-    print("3.View transactions")
+    print("3.Transactions")
     print("4.Modify account details")
     print("5.Close account")
     print("6.View transaction summary")
@@ -295,38 +302,6 @@ def menu():
 
 #Calling main code
 menu()
-
-
-'''issues
-phone number unique . and 10 digits in modifying phone number, cant give the same number.
-opt mei blank dene se issue aa rha hai resolve it
-
-
-'''
-
-'''improvements 
-
-
-
-
-
-
-
-'''
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
 
 
 
